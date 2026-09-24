@@ -5,63 +5,110 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>app-bonic alati</title>
 <meta name="description" content="Besplatni online alati koji rade u pregledniku: HUB-3 uplatnice, provjera OIB-a, PDF alati, smanjivanje slika, CSV/Excel, barkodovi, QR, lozinke… Ništa se ne šalje na poslužitelj.">
-<link rel="icon" href="zajednicko/logo.svg">
+<link rel="icon" href="zajednicko/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="zajednicko/apple-touch-icon.png">
 <link rel="stylesheet" href="zajednicko/app-bonic.css">
 <style>
-  .hero { padding: 44px 0 26px; display: grid; gap: 18px; }
-  .hero h1 { font-size: clamp(30px, 5vw, 46px); line-height: 1.08; letter-spacing: -.03em; max-width: 18ch; }
-  .hero h1 em { font-style: normal; background: linear-gradient(90deg, #3b82f6, #ec4899); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .hero > p { color: var(--blijedo); font-size: clamp(16px, 2vw, 18.5px); max-width: 62ch; }
-  .jamstva { display: flex; flex-wrap: wrap; gap: 8px; }
-  .jamstva span { display: inline-flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 600; padding: 7px 13px; border-radius: 999px; background: var(--plo); border: 1px solid var(--crta); }
-  .jamstva .ik { width: 16px; height: 16px; color: var(--ok); }
-  .alatna-traka { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 8px 0 18px; }
-  .trazilica { position: relative; flex: 1 1 260px; max-width: 380px; }
-  .trazilica .ik { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--blijedo); }
-  .trazilica input { padding-left: 38px; background: var(--plo); }
-  .filtri { display: flex; flex-wrap: wrap; gap: 6px; }
-  .filtri button { font-size: 13.5px; font-weight: 600; padding: 7px 13px; border-radius: 999px; border: 1px solid var(--crta); background: var(--plo); cursor: pointer; }
-  .filtri button[aria-pressed="true"] { background: var(--tekst); color: var(--bg); border-color: var(--tekst); }
-  .mreza { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
+  /* ---------- uvod ---------- */
+  .hero { display: grid; gap: 30px; align-items: center; padding: 48px 0 44px; }
+  @media (min-width: 900px) { .hero { grid-template-columns: minmax(0, 1.25fr) minmax(0, .75fr); padding: 64px 0 56px; } }
+  .nadnaslov { font-size: 13px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--blijedo); }
+  .hero h1 { font: 800 clamp(44px, 7.4vw, 84px)/.92 var(--naslovni); text-transform: uppercase; color: var(--plava); margin: 14px 0 0; letter-spacing: -.01em; }
+  .hero h1 .crveno { color: var(--crvena); }
+  .oznaka-red { display: flex; align-items: center; gap: 14px; margin: 22px 0 18px; }
+  .oznaka-red::after { content: ""; flex: 1; height: 2px; background: var(--crvena); opacity: .8; max-width: 320px; }
+  .hero p.uvodni { font-size: 18px; color: var(--blijedo); max-width: 56ch; }
+  .hero .gumbi { margin-top: 24px; }
+  .ilustracija { position: relative; justify-self: center; width: min(100%, 360px); aspect-ratio: 1; }
+  .ilustracija img { position: absolute; inset: 16%; width: 68%; height: 68%; filter: drop-shadow(0 18px 30px rgb(22 48 92 / .22)); }
+  .rukom { position: absolute; font: 600 25px/1 var(--rukopis); color: var(--plava); white-space: nowrap; }
+  .rukom.crveno { color: var(--crvena); }
+  .rukom svg { position: absolute; width: 46px; height: 30px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+
+  /* ---------- traka jamstava ---------- */
+  .jamstva { background: #fff; border-top: 1px solid var(--crta); border-bottom: 1px solid var(--crta); }
+  .jamstva ul { list-style: none; margin: 0 auto; padding: 0 20px; max-width: 1240px; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+  .jamstva li { padding: 26px 18px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .jamstva li + li { border-left: 1px solid var(--crta); }
+  @media (max-width: 700px) { .jamstva li + li { border-left: 0; border-top: 1px solid var(--crta); } }
+  .jamstva .ik { width: 32px; height: 32px; color: var(--plava); stroke-width: 1.6; }
+  .jamstva b { font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; color: var(--plava); }
+  .jamstva span { font-size: 13.5px; color: var(--blijedo); max-width: 26ch; }
+
+  /* ---------- popis alata ---------- */
+  .odjeljak { padding-top: 54px; }
+  .glava-odjeljka { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
+  .rukopis-nad { font: 600 26px/1 var(--rukopis); color: var(--crvena); display: block; margin-bottom: 2px; }
+  .glava-odjeljka h2 { font: 800 clamp(34px, 5vw, 52px)/.95 var(--naslovni); text-transform: uppercase; color: var(--plava); }
+  .trazilica { position: relative; width: min(100%, 340px); }
+  .trazilica .ik { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--blijedo); }
+  .trazilica input { padding-left: 40px; min-height: 44px; }
+  .filtri { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+  .filtri button { font-size: 14px; font-weight: 800; padding: 8px 15px; border-radius: 8px; border: 2px solid rgb(22 48 92 / .15); background: #fff; color: var(--plava); cursor: pointer; }
+  .filtri button:hover { border-color: rgb(22 48 92 / .4); }
+  .filtri button[aria-pressed="true"] { background: var(--plava); color: #fff; border-color: var(--plava); }
+  .mreza { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 18px; }
   .alat {
-    display: flex; flex-direction: column; gap: 10px; padding: 18px; text-decoration: none; color: var(--tekst);
-    background: var(--plo); border: 1px solid var(--crta); border-radius: 16px; box-shadow: var(--sjena);
-    transition: transform .18s, border-color .18s;
+    position: relative; display: flex; flex-direction: column; gap: 10px; padding: 22px 22px 20px; text-decoration: none; color: var(--tekst);
+    background: #fff; border: 1px solid var(--crta); border-radius: 16px; box-shadow: var(--sjena); overflow: hidden;
+    transition: transform .18s, box-shadow .18s;
   }
-  .alat:hover { transform: translateY(-3px); border-color: var(--akcent); }
-  .alat .gore { display: flex; align-items: center; justify-content: space-between; }
-  .alat .ikona { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: var(--akcent-meko); color: var(--akcent-jak); }
-  .alat .ikona .ik { width: 22px; height: 22px; }
-  .alat .kat { font-size: 12px; font-weight: 600; color: var(--blijedo); }
-  .alat h2 { font-size: 17px; letter-spacing: -.01em; }
-  .alat p { color: var(--blijedo); font-size: 14px; flex: 1; }
-  .alat .dalje { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--akcent-jak); }
-  .alat .dalje .ik { width: 16px; height: 16px; transition: transform .18s; }
-  .alat:hover .dalje .ik { transform: translateX(3px); }
+  .alat::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--crvena); transform: scaleY(0); transform-origin: top; transition: transform .2s; }
+  .alat:hover { transform: translateY(-3px); box-shadow: 0 16px 34px -16px rgb(22 48 92 / .35); }
+  .alat:hover::before { transform: scaleY(1); }
+  .alat .gore { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .alat .ikona { color: var(--plava); }
+  .alat .ikona .ik { width: 30px; height: 30px; stroke-width: 1.7; }
+  .alat .kat { font-size: 11.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--crvena); }
+  .alat h3 { font: 700 25px/1 var(--naslovni); text-transform: uppercase; color: var(--plava); margin-top: 4px; }
+  .alat p { color: var(--blijedo); font-size: 14.5px; flex: 1; }
+  .alat .dalje { display: inline-flex; align-items: center; gap: 6px; font-size: 14.5px; font-weight: 800; color: var(--crvena); }
+  .alat .dalje .ik { width: 17px; height: 17px; transition: transform .18s; }
+  .alat:hover .dalje .ik { transform: translateX(4px); }
   .nista { color: var(--blijedo); padding: 24px 0; }
 </style>
 </head>
 <body data-alat="alati">
 <header class="ab-vrh"></header>
 
-<main class="ab-omot">
-  <section class="hero">
-    <h1>Besplatni alati koji <em>ne šalju tvoje podatke</em> nikamo</h1>
-    <p>Uplatnice s barkodom, provjera OIB-a, PDF-ovi, slike, tablice, barkodovi, lozinke i uredske oznake — sve radi izravno u tvom pregledniku, bez registracije i bez slanja datoteka na tuđi poslužitelj.</p>
-    <div class="jamstva">
-      <span><span data-ik="kvacica"></span>Ništa se ne šalje na poslužitelj</span>
-      <span><span data-ik="kvacica"></span>Bez registracije i kolačića</span>
-      <span><span data-ik="kvacica"></span>Pogodno za GDPR</span>
-      <span><span data-ik="kvacica"></span>Radi i bez interneta</span>
+<main>
+  <section class="ab-omot hero">
+    <div>
+      <span class="nadnaslov">app-bonic · besplatni alati</span>
+      <h1>Alati koji tvoje podatke <span class="crveno">ne šalju</span> nikamo</h1>
+      <div class="oznaka-red"><span class="oznaka-crvena">100 % u pregledniku</span></div>
+      <p class="uvodni">HUB-3 uplatnice, provjera OIB-a, PDF-ovi, slike, tablice, barkodovi, lozinke i uredske oznake. Sve se radi na tvom računalu — bez registracije i bez slanja datoteka na tuđi poslužitelj.</p>
+      <div class="gumbi">
+        <a class="gumb glavni veliki" href="#alati">Pogledaj alate <span data-ik="strelica"></span></a>
+        <a class="gumb veliki" href="../hub3-uplatnice/"><span data-ik="novac"></span>HUB-3 uplatnica</a>
+      </div>
+    </div>
+    <div class="ilustracija" aria-hidden="true">
+      <img src="zajednicko/logo.png" alt="">
+      <span class="rukom crveno" style="left:0;top:4%">GDPR<svg style="left:62px;top:14px" viewBox="0 0 46 30"><path d="M2 6c14-3 28 2 38 16M40 22l-1-9M40 22l-9-2"/></svg></span>
+      <span class="rukom" style="right:0;top:40%">Bez registracije</span>
+      <span class="rukom" style="left:4%;bottom:2%">Radi i offline<svg style="left:140px;top:-26px" viewBox="0 0 46 30"><path d="M2 26c14 2 28-4 36-18M38 8l-9 1M38 8l1 9"/></svg></span>
     </div>
   </section>
 
-  <div class="alatna-traka">
-    <label class="trazilica"><span data-ik="trazi"></span><input type="search" id="trazi" placeholder="Pronađi alat…" aria-label="Pronađi alat"></label>
+  <section class="jamstva">
+    <ul>
+      <li><span data-ik="stit"></span><b>Ništa se ne šalje</b><span>Upisani podaci i datoteke ostaju na tvom računalu.</span></li>
+      <li><span data-ik="kljuc"></span><b>Bez registracije</b><span>Nema računa, kolačića ni analitike.</span></li>
+      <li><span data-ik="oib"></span><b>Pogodno za GDPR</b><span>OIB, IBAN i ugovore možeš obrađivati bez brige.</span></li>
+      <li><span data-ik="preuzmi"></span><b>Radi i bez interneta</b><span>Nakon prvog učitavanja stranice.</span></li>
+    </ul>
+  </section>
+
+  <section class="ab-omot odjeljak" id="alati">
+    <div class="glava-odjeljka">
+      <div><span class="rukopis-nad">Iz radionice</span><h2>Svi alati</h2></div>
+      <label class="trazilica"><span data-ik="trazi"></span><input type="search" id="trazi" placeholder="Pronađi alat…" aria-label="Pronađi alat"></label>
+    </div>
     <div class="filtri" id="filtri"></div>
-  </div>
-  <div class="mreza" id="mreza"></div>
-  <p class="nista" id="nista" hidden>Nema alata za taj upit.</p>
+    <div class="mreza" id="mreza"></div>
+    <p class="nista" id="nista" hidden>Nema alata za taj upit.</p>
+  </section>
 </main>
 
 <footer class="ab-dno"></footer>
@@ -74,8 +121,8 @@
   $('#filtri').innerHTML = kategorije.map(k => `<button type="button" aria-pressed="${k === kat}" data-kat="${esc(k)}">${esc(k)}</button>`).join('');
   $('#mreza').innerHTML = ALATI.map(a => `<a class="alat" href="${url(a.id)}" data-kat="${esc(a.kat)}" data-tekst="${esc((a.naziv + ' ' + a.opis + ' ' + a.kat).toLowerCase())}">
       <div class="gore"><span class="ikona">${ikona(a.ik)}</span><span class="kat">${esc(a.kat)}</span></div>
-      <h2>${esc(a.naziv)}</h2><p>${esc(a.opis)}</p>
-      <span class="dalje">Otvori ${ikona('strelica')}</span></a>`).join('');
+      <h3>${esc(a.naziv)}</h3><p>${esc(a.opis)}</p>
+      <span class="dalje">Otvori alat ${ikona('strelica')}</span></a>`).join('');
   const filtriraj = () => {
     const q = $('#trazi').value.trim().toLowerCase();
     let n = 0;
