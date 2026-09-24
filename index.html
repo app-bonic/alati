@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>app-bonic alati</title>
+<meta name="description" content="Besplatni online alati koji rade u pregledniku: HUB-3 uplatnice, provjera OIB-a, PDF alati, smanjivanje slika, CSV/Excel, barkodovi, QR, lozinke… Ništa se ne šalje na poslužitelj.">
+<link rel="icon" href="zajednicko/logo.svg">
+<link rel="stylesheet" href="zajednicko/app-bonic.css">
+<style>
+  .hero { padding: 44px 0 26px; display: grid; gap: 18px; }
+  .hero h1 { font-size: clamp(30px, 5vw, 46px); line-height: 1.08; letter-spacing: -.03em; max-width: 18ch; }
+  .hero h1 em { font-style: normal; background: linear-gradient(90deg, #3b82f6, #ec4899); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero > p { color: var(--blijedo); font-size: clamp(16px, 2vw, 18.5px); max-width: 62ch; }
+  .jamstva { display: flex; flex-wrap: wrap; gap: 8px; }
+  .jamstva span { display: inline-flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 600; padding: 7px 13px; border-radius: 999px; background: var(--plo); border: 1px solid var(--crta); }
+  .jamstva .ik { width: 16px; height: 16px; color: var(--ok); }
+  .alatna-traka { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 8px 0 18px; }
+  .trazilica { position: relative; flex: 1 1 260px; max-width: 380px; }
+  .trazilica .ik { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--blijedo); }
+  .trazilica input { padding-left: 38px; background: var(--plo); }
+  .filtri { display: flex; flex-wrap: wrap; gap: 6px; }
+  .filtri button { font-size: 13.5px; font-weight: 600; padding: 7px 13px; border-radius: 999px; border: 1px solid var(--crta); background: var(--plo); cursor: pointer; }
+  .filtri button[aria-pressed="true"] { background: var(--tekst); color: var(--bg); border-color: var(--tekst); }
+  .mreza { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
+  .alat {
+    display: flex; flex-direction: column; gap: 10px; padding: 18px; text-decoration: none; color: var(--tekst);
+    background: var(--plo); border: 1px solid var(--crta); border-radius: 16px; box-shadow: var(--sjena);
+    transition: transform .18s, border-color .18s;
+  }
+  .alat:hover { transform: translateY(-3px); border-color: var(--akcent); }
+  .alat .gore { display: flex; align-items: center; justify-content: space-between; }
+  .alat .ikona { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: var(--akcent-meko); color: var(--akcent-jak); }
+  .alat .ikona .ik { width: 22px; height: 22px; }
+  .alat .kat { font-size: 12px; font-weight: 600; color: var(--blijedo); }
+  .alat h2 { font-size: 17px; letter-spacing: -.01em; }
+  .alat p { color: var(--blijedo); font-size: 14px; flex: 1; }
+  .alat .dalje { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--akcent-jak); }
+  .alat .dalje .ik { width: 16px; height: 16px; transition: transform .18s; }
+  .alat:hover .dalje .ik { transform: translateX(3px); }
+  .nista { color: var(--blijedo); padding: 24px 0; }
+</style>
+</head>
+<body data-alat="alati">
+<header class="ab-vrh"></header>
+
+<main class="ab-omot">
+  <section class="hero">
+    <h1>Besplatni alati koji <em>ne šalju tvoje podatke</em> nikamo</h1>
+    <p>Uplatnice s barkodom, provjera OIB-a, PDF-ovi, slike, tablice, barkodovi, lozinke i uredske oznake — sve radi izravno u tvom pregledniku, bez registracije i bez slanja datoteka na tuđi poslužitelj.</p>
+    <div class="jamstva">
+      <span><span data-ik="kvacica"></span>Ništa se ne šalje na poslužitelj</span>
+      <span><span data-ik="kvacica"></span>Bez registracije i kolačića</span>
+      <span><span data-ik="kvacica"></span>Pogodno za GDPR</span>
+      <span><span data-ik="kvacica"></span>Radi i bez interneta</span>
+    </div>
+  </section>
+
+  <div class="alatna-traka">
+    <label class="trazilica"><span data-ik="trazi"></span><input type="search" id="trazi" placeholder="Pronađi alat…" aria-label="Pronađi alat"></label>
+    <div class="filtri" id="filtri"></div>
+  </div>
+  <div class="mreza" id="mreza"></div>
+  <p class="nista" id="nista" hidden>Nema alata za taj upit.</p>
+</main>
+
+<footer class="ab-dno"></footer>
+<script src="zajednicko/app-bonic.js"></script>
+<script>
+(() => {
+  const { $, esc, ikona, ALATI, url } = AB;
+  const kategorije = ['Svi', ...new Set(ALATI.map(a => a.kat))];
+  let kat = 'Svi';
+  $('#filtri').innerHTML = kategorije.map(k => `<button type="button" aria-pressed="${k === kat}" data-kat="${esc(k)}">${esc(k)}</button>`).join('');
+  $('#mreza').innerHTML = ALATI.map(a => `<a class="alat" href="${url(a.id)}" data-kat="${esc(a.kat)}" data-tekst="${esc((a.naziv + ' ' + a.opis + ' ' + a.kat).toLowerCase())}">
+      <div class="gore"><span class="ikona">${ikona(a.ik)}</span><span class="kat">${esc(a.kat)}</span></div>
+      <h2>${esc(a.naziv)}</h2><p>${esc(a.opis)}</p>
+      <span class="dalje">Otvori ${ikona('strelica')}</span></a>`).join('');
+  const filtriraj = () => {
+    const q = $('#trazi').value.trim().toLowerCase();
+    let n = 0;
+    document.querySelectorAll('.alat').forEach(el => {
+      const vidi = (kat === 'Svi' || el.dataset.kat === kat) && (!q || el.dataset.tekst.includes(q));
+      el.hidden = !vidi; if (vidi) n++;
+    });
+    $('#nista').hidden = n > 0;
+  };
+  $('#filtri').addEventListener('click', e => {
+    const b = e.target.closest('[data-kat]'); if (!b) return;
+    kat = b.dataset.kat;
+    document.querySelectorAll('#filtri button').forEach(x => x.setAttribute('aria-pressed', x === b));
+    filtriraj();
+  });
+  $('#trazi').addEventListener('input', filtriraj);
+})();
+</script>
+</body>
+</html>
